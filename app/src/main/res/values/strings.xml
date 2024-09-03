@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">WingWatch</string>
+    <string name="app_logo">App Logo</string>
+    <string name="settings_header">Settings &amp; Activity</string>
+    <string name="profile">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="activity">Activity</string>
+    <string name="saved_bird_observations">Saved Bird Observations</string>
+    <string name="measurement_unit">Measurement Unit</string>
+    <string name="user_profile_icon">User Profile Icon</string>
+    <string name="arrow_right_icon">Arrow Right Icon</string>
+</resources>

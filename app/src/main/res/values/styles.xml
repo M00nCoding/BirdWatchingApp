@@ -1,0 +1,20 @@
+<resources>
+    <!-- Base application theme -->
+    <style name="Theme.WingWatch" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Customize your theme here -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
+        <item name="colorOnPrimary">@color/onPrimaryColor</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+        <item name="colorOnSecondary">@color/onSecondaryColor</item>
+        <item name="android:windowBackground">@color/background</item>
+        <!-- Add other theme attributes here -->
+    </style>
+
+    <!-- NoActionBar Theme -->
+    <style name="Theme.WingWatch.NoActionBar" parent="Theme.WingWatch">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources>

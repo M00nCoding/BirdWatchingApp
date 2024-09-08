@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "690818167929",
+    "firebase_url": "https://birdwatching-app-a53ae-default-rtdb.firebaseio.com",
+    "project_id": "birdwatching-app-a53ae",
+    "storage_bucket": "birdwatching-app-a53ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690818167929:android:105068dbf6a4f13a9550a8",
+        "android_client_info": {
+          "package_name": "za.co.varsitycollege.syntechsoftware.wingwatch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdy-pl2vvD5O95IaTTbS9V_zJiw-DNR1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

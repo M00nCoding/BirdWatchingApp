@@ -26,6 +26,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -42,7 +43,19 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    //noinspection UseTomlInstead
+    implementation ("org.bouncycastle:bcprov-jdk15to18:1.70")
+    // Firebase Auth and Realtime Database dependencies
+    //noinspection UseTomlInstead
+    implementation("com.google.firebase:firebase-auth:23.0.0")
+    //noinspection UseTomlInstead
+    implementation("com.google.firebase:firebase-database:21.0.0")
+    // Testing dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+
 }
+// Applying the Google services plugin
+apply(plugin = "com.google.gms.google-services")

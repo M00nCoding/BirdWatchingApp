@@ -16,6 +16,7 @@
     <color name="secondaryDarkColor">#018786</color>
     <color name="onSecondaryColor">#000000</color>
 
+    <color name="lavender">#E6E6FA</color> <!-- Lavender color code -->
 </resources>
 
 

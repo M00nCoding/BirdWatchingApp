@@ -2,7 +2,6 @@ package za.co.varsitycollege.syntechsoftware.wingwatch
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +18,7 @@ class HomeActivity : AppCompatActivity() {
         val goalsButton: Button = findViewById(R.id.goals)
         val birdsButton: Button = findViewById(R.id.birds)
         // Get the logged-in user's userId and username from the Intent
-        val userId = intent.getStringExtra("userId")
+        intent.getStringExtra("userId")
         val username = intent.getStringExtra("username")
 
         Toast.makeText(this, "Welcome, $username!", Toast.LENGTH_SHORT).show()
@@ -42,7 +41,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     // function still needs to be added to the AddBirdsActivity so the info is not added to that activity yet as I just created it for now
-    fun onClickableImageClick(view: View) {
+    fun onClickableImageClick() {
         // Assuming there's an AddBirdsActivity class
         val intent = Intent(this, AddBirdsActivity::class.java)
         startActivity(intent)

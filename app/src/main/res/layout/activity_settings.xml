@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SettingsActivity"
-    android:background="@drawable/settings_background_image">
+    android:background="#f1d9bd">
 
     <!-- Background Image  Cam always be re-added but for now  also update the text to white background
     <ImageView
@@ -65,76 +65,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Edit Profile Section -->
+    <!-- Activity Section -->
     <LinearLayout
-        android:id="@+id/editProfileSection"
+        android:id="@+id/settingsSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:orientation="vertical"
         android:padding="16dp"
         android:background="@drawable/section_background"
-        android:clickable="true"
-        android:focusable="true"
         app:layout_constraintTop_toBottomOf="@id/settingsHeader"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/profile"
-            android:textSize="18sp"
-            android:textColor="@color/primaryTextColor"
-            android:textStyle="bold" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/dividerColor" />
-
-        <TextView
-            android:id="@+id/editProfile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawablePadding="8dp"
-            android:text="@string/edit_profile"
-            android:textSize="16sp"
-            android:minHeight="38dp"
-            android:textColor="@color/secondaryTextColor"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            app:drawableEndCompat="@drawable/ic_arrow_right" />
-
-        <TextView
-            android:id="@+id/savedBirdObservations"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:drawablePadding="8dp"
-            android:focusable="true"
-            android:minHeight="38dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:text="@string/saved_bird_observations"
-            android:textColor="@color/secondaryTextColor"
-            android:textSize="16sp"
-            app:drawableEndCompat="@drawable/ic_arrow_right" />
-
-    </LinearLayout>
-
-    <!-- Activity Section -->
-    <LinearLayout
-        android:id="@+id/activitySection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@drawable/section_background"
-        app:layout_constraintTop_toBottomOf="@id/editProfileSection"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -208,17 +148,61 @@
             app:layout_constraintTop_toBottomOf="@id/maxTravelDistanceEt"
             />
 
+    </LinearLayout>
+
+    <!-- Edit Profile Section -->
+    <LinearLayout
+        android:id="@+id/editProfileSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/section_background"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/settingsSection"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/profile"
+            android:textSize="18sp"
+            android:textColor="@color/primaryTextColor"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/dividerColor" />
+
         <Button
-            android:id="@+id/settingsBackBtn"
+            android:id="@+id/backSettingsProfileBtn"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/brown"
-            android:text="Back"
+            android:text="Back to home"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/saveSettingsBtn"
+            />
+
+        <Button
+            android:id="@+id/logoutBtn"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/brown"
+            android:text="Log Out"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/backSettingsProfileBtn"
             />
 
     </LinearLayout>

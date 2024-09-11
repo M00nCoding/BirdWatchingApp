@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">WingWatch</string>
     <string name="app_logo">App Logo</string>
-    <string name="settings_header">Settings &amp; Activity</string>
+    <string name="settings_header">Settings &amp; Profile</string>
     <string name="profile">Profile</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="activity">Activity</string>

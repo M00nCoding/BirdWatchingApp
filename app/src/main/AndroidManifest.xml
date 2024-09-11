@@ -19,6 +19,9 @@
             android:theme="@style/Theme.WingWatch.NoActionBar">
         </activity>
 
+        <activity android:name=".FilterActivity"
+            android:theme="@style/Theme.WingWatch.NoActionBar" />
+
         <!-- Login Activity -->
         <activity
             android:name=".LoginActivity"

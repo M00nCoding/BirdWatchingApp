@@ -13,12 +13,13 @@
         android:theme="@style/Theme.WingWatch"
         tools:targetApi="31">
 
-        <!--Settings Activity-->
+        <!-- Settings Activity -->
         <activity android:name=".SettingsActivity"
             android:label="Settings &amp; Activity"
             android:theme="@style/Theme.WingWatch.NoActionBar">
         </activity>
 
+        <!-- Filter Activity -->
         <activity android:name=".FilterActivity"
             android:theme="@style/Theme.WingWatch.NoActionBar" />
 
@@ -38,7 +39,10 @@
         <!-- Home Activity -->
         <activity android:name=".HomeActivity" android:exported="false" />
 
-
+        <!-- Add Bird Activity -->
+        <activity android:name=".AddBirdsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WingWatch.NoActionBar" />
 
     </application>
 

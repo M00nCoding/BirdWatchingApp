@@ -50,6 +50,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:23.0.0")
     //noinspection UseTomlInstead
     implementation("com.google.firebase:firebase-database:21.0.0")
+    implementation(libs.firebase.storage.ktx)
     // Testing dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -14,7 +14,7 @@
         android:id="@+id/birdImageIV"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:src="@drawable/bird_Image_2"
+        android:src="@drawable/bird_image"
         android:background="@drawable/circle_shape"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"

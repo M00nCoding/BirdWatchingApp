@@ -1,10 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f1d9bd">
 
     <!-- Logo, Title, and User Icon -->
+
+    <!-- Navigation Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,36 +18,49 @@
             android:id="@+id/logoImage"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/wing_watch_logo"
-            android:contentDescription="WingWatch logo"
+            android:layout_marginTop="1dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="WingWatch logo"
             android:scaleType="centerCrop"
-            android:adjustViewBounds="true" />
+            android:src="@drawable/wing_watch_logo" />
 
         <TextView
             android:id="@+id/titleText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="Bird Observations"
-            android:textSize="24sp"
             android:textColor="#3d2b1f"
-            android:gravity="center" />
+            android:textSize="24sp" />
 
         <ImageView
             android:id="@+id/userIcon"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/user_icon"
-            android:contentDescription="User icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="1dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="User icon"
             android:scaleType="centerCrop"
-            android:adjustViewBounds="true" />
+            android:src="@drawable/user_icon" />
+
+        <ImageView
+            android:id="@+id/logout"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="1dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="Logout icon"
+            android:onClick="logoutUser"
+            android:scaleType="centerCrop"
+            android:src="@drawable/logout"
+            tools:ignore="TouchTargetSizeCheck" />
+
     </LinearLayout>
 
-    <!-- Navigation Bar -->
     <LinearLayout
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"

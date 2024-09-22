@@ -88,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 } else {
                     // Username not found
-                    Toast.makeText(this@LoginActivity, "User does not exist. Please register.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "User does not exist. Please register or check your credentials again.", Toast.LENGTH_SHORT).show()
                 }
             }
 

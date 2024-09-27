@@ -56,7 +56,13 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
+    // Google Maps SDK
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    // Google Location Services
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+    // Retrofit for API calls
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
 }
 // Applying the Google services plugin

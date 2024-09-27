@@ -30,8 +30,9 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this, menuButton::class.java))
         }
 
+        // Navigate to HotspotsActivity (you need to replace HotspotsActivity with the correct activity class)
         hotspotsButton.setOnClickListener {
-            startActivity(Intent(this, hotspotsButton::class.java))
+            startActivity(Intent(this, HotspotsActivity::class.java))
         }
 
         goalsButton.setOnClickListener {

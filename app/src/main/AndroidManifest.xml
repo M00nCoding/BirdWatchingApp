@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WingWatch"
         tools:targetApi="31">
+
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA_kRbH4zhg5H6TQ6SNi6A2y_RtEZwvJOc" />
 
         <!-- Settings Activity -->
         <activity android:name=".SettingsActivity"
@@ -42,6 +51,8 @@
         <!-- Add Bird Activity -->
         <activity android:name=".AddBirdsActivity" />
 
+        <!-- Hotspots Activity -->
+        <activity android:name=".HotspotsActivity" android:exported="false" />
 
     </application>
 

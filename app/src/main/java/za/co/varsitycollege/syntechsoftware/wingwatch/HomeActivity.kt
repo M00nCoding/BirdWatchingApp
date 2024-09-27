@@ -38,8 +38,9 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this, goalsButton::class.java))
         }
 
+        // Navigate to AddBirdsActivity
         birdsButton.setOnClickListener {
-            startActivity(Intent(this, birdsButton::class.java))
+            startActivity(Intent(this, AddBirdsActivity::class.java))
         }
 
         // Set logout button click listener

@@ -6,21 +6,19 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import java.util.Calendar
-import java.util.Locale
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
-@Suppress("DEPRECATION")
 class AddBirdsActivity : AppCompatActivity() {
 
     private lateinit var birdImageIV: ImageView
@@ -34,7 +32,9 @@ class AddBirdsActivity : AppCompatActivity() {
 
     private lateinit var dbRef: DatabaseReference
     private lateinit var auth: FirebaseAuth
-    private var imageBitmap: Bitmap? = null
+    private lateinit var imageBitmap: Bitmap
+
+    private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,96 +49,174 @@ class AddBirdsActivity : AppCompatActivity() {
         dateSightTv = findViewById(R.id.dateSightTv)
         birdNameET = findViewById(R.id.birdNameEt)
         birdDescriptionET = findViewById(R.id.birdDescriptionEt)
-        locationET = findViewById(R.id.birdLocationEt)
-        submitBirdBtn = findViewById(R.id.addBirdBtn)
+        locationET = findViewById(R.id.locationEt)
+        submitBirdBtn = findViewById(R.id.submitbutton)
 
-        // Activity result for capturing image
-        val getResult =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                    val bitmap = result.data?.extras?.get("data") as? Bitmap
-                    if (bitmap != null) {
-                        birdImageIV.setImageBitmap(bitmap)
-                        imageBitmap = bitmap
-                    }
-                }
-            }
-
-        // Firebase references
         dbRef = FirebaseDatabase.getInstance().getReference("birds")
         auth = FirebaseAuth.getInstance()
 
-        // Take photo button listener
-        birdImageBtn.setOnClickListener {
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            getResult.launch(intent)
+        // Camera Launcher using Activity Result API
+        cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val extras = result.data?.extras
+                val imageBitmap = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    extras?.getParcelable("data", Bitmap::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    extras?.getParcelable("data")
+                }
+
+                if (imageBitmap != null) {
+                    birdImageIV.setImageBitmap(imageBitmap)
+                    this.imageBitmap = imageBitmap
+                } else {
+                    Toast.makeText(this, "Failed to capture image", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
-        // Date picker for bird sighting
+        // Camera button click event
+        birdImageBtn.setOnClickListener {
+            dispatchTakePictureIntent()  // Directly launch the camera
+        }
+
+        // Date picker button
         birdDateFoundBtn.setOnClickListener {
             showDatePickerDialog()
         }
 
-        // Submit bird data button listener
+        // Submit bird button
         submitBirdBtn.setOnClickListener {
             if (validateInputs()) {
-                saveBirdDataWithImage()
+                if (::imageBitmap.isInitialized) {
+                    saveBirdDataWithImage()
+                } else {
+                    saveBirdData()
+                }
             }
         }
     }
 
+    // Launch camera intent
+    private fun dispatchTakePictureIntent() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraLauncher.launch(takePictureIntent)
+    }
+
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
         val datePickerDialog = DatePickerDialog(
             this,
-            { _, year, month, dayOfMonth ->
-                val date = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year)
-                dateSightTv.text = date
+            { _, selectedYear, selectedMonth, selectedDayOfMonth ->
+                val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                calendar.set(selectedYear, selectedMonth, selectedDayOfMonth)
+                val selectedDate = sdf.format(calendar.time)
+                dateSightTv.text = selectedDate
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            year, month, day
         )
         datePickerDialog.show()
     }
 
     private fun validateInputs(): Boolean {
-        return when {
-            birdNameET.text.isNullOrEmpty() -> {
-                birdNameET.error = "Please enter bird name"
-                false
-            }
-            birdDescriptionET.text.isNullOrEmpty() -> {
-                birdDescriptionET.error = "Please enter bird description"
-                false
-            }
-            locationET.text.isNullOrEmpty() -> {
-                locationET.error = "Please enter location"
-                false
-            }
-            dateSightTv.text.isNullOrEmpty() -> {
-                dateSightTv.error = "Please select date sighted"
-                false
-            }
-            imageBitmap == null -> {
-                showAlertDialog()
-                false
-            }
-            else -> true
+        val birdName = birdNameET.text.toString().trim()
+        val birdDescription = birdDescriptionET.text.toString().trim()
+        val birdLocation = locationET.text.toString().trim()
+        val dateSighted = dateSightTv.text.toString().trim()
+
+        if (birdName.isEmpty()) {
+            birdNameET.error = "Enter Bird Name"
+            return false
         }
+
+        if (birdDescription.isEmpty()) {
+            birdDescriptionET.error = "Enter Description"
+            return false
+        }
+
+        if (birdLocation.isEmpty()) {
+            locationET.error = "Enter Location"
+            return false
+        }
+
+        if (dateSighted.isEmpty()) {
+            Toast.makeText(this, "Select Date Sighted", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
     }
 
-    // Show alert dialog without repeating identical arguments
-    private fun showAlertDialog() {
-        val builder = android.app.AlertDialog.Builder(this)
-        builder.setTitle("Image Missing")
-        builder.setMessage("Please capture or select an image of the bird.")
-        builder.setPositiveButton("OK", null)
-        builder.show()
+    private fun saveBirdData() {
+        val birdName = birdNameET.text.toString()
+        val birdDescription = birdDescriptionET.text.toString()
+        val birdLocation = locationET.text.toString()
+        val dateSighted = dateSightTv.text.toString()
+
+        val birdId = dbRef.push().key!!
+        val uid = auth.currentUser?.uid.toString()
+
+        val bird = BirdModel(birdId, birdName, birdDescription, birdLocation, dateSighted, "", uid)
+
+        dbRef.child(birdId).setValue(bird)
+            .addOnCompleteListener {
+                Toast.makeText(this, "Bird added successfully!", Toast.LENGTH_LONG).show()
+                clearFields()
+            }.addOnFailureListener { err ->
+                Toast.makeText(this, "Error ${err.message}", Toast.LENGTH_LONG).show()
+            }
     }
 
     private fun saveBirdDataWithImage() {
-        // Save bird data and image to Firebase
-        // Function implementation for saving data
+        val birdName = birdNameET.text.toString()
+        val birdDescription = birdDescriptionET.text.toString()
+        val birdLocation = locationET.text.toString()
+        val dateSighted = dateSightTv.text.toString()
+
+        uploadBitmapToFirebase(imageBitmap, birdName) { imageUrl ->
+            val birdId = dbRef.push().key!!
+            val uid = auth.currentUser?.uid.toString()
+
+            val bird = BirdModel(birdId, birdName, birdDescription, birdLocation, dateSighted, imageUrl, uid)
+
+            dbRef.child(birdId).setValue(bird)
+                .addOnCompleteListener {
+                    Toast.makeText(this, "Bird added successfully!", Toast.LENGTH_LONG).show()
+                    clearFields()
+                }.addOnFailureListener { err ->
+                    Toast.makeText(this, "Error ${err.message}", Toast.LENGTH_LONG).show()
+                }
+        }
+    }
+
+    private fun uploadBitmapToFirebase(bitmap: Bitmap, imageName: String, callback: (String) -> Unit) {
+        val storageReference = FirebaseStorage.getInstance().reference.child("bird_images/$imageName.jpg")
+
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        val data = outputStream.toByteArray()
+
+        storageReference.putBytes(data)
+            .addOnSuccessListener {
+                storageReference.downloadUrl.addOnSuccessListener { uri ->
+                    callback(uri.toString())
+                }.addOnFailureListener { exception ->
+                    Toast.makeText(this, "Failed to get download URL: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+            }.addOnFailureListener { exception ->
+                Toast.makeText(this, "Failed to upload image: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun clearFields() {
+        birdNameET.text.clear()
+        birdDescriptionET.text.clear()
+        locationET.text.clear()
+        dateSightTv.text = ""
+        birdImageIV.setImageResource(0)
     }
 }

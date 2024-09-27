@@ -22,8 +22,7 @@
         android:layout_marginStart="110dp"
         android:layout_marginEnd="110dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        />
+        android:layout_marginBottom="16dp"/>
 
     <!-- Take Photo Button (overlaying the bottom right of the ImageView) -->
     <ImageButton
@@ -42,8 +41,7 @@
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/birdImageIV"
         app:layout_constraintEnd_toEndOf="@id/birdImageIV"
-        tools:ignore="SpeakableTextPresentCheck"
-        />
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <EditText
         android:id="@+id/birdNameEt"
@@ -65,8 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/birdImageIV"
-        tools:ignore="TouchTargetSizeCheck"
-        />
+        tools:ignore="TouchTargetSizeCheck" />
 
     <EditText
         android:id="@+id/birdDescriptionEt"
@@ -88,11 +85,10 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/birdNameEt"
-        />
+        app:layout_constraintTop_toBottomOf="@id/birdNameEt" />
 
     <EditText
-        android:id="@+id/birdLocationEt"
+        android:id="@+id/locationEt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
@@ -110,8 +106,7 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/birdDescriptionEt"
-        />
+        app:layout_constraintTop_toBottomOf="@id/birdDescriptionEt" />
 
     <TextView
         android:id="@+id/dateSightTv"
@@ -130,7 +125,8 @@
         android:layout_marginEnd="160dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
-        app:layout_constraintTop_toBottomOf="@id/birdLocationEt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/locationEt"
         app:layout_constraintEnd_toStartOf="@+id/birdDateFoundBtn"
         />
 
@@ -152,13 +148,15 @@
         android:layout_marginBottom="30dp"
         android:layout_marginEnd="30dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/birdLocationEt"
+        app:layout_constraintTop_toBottomOf="@id/locationEt"
         app:layout_constraintStart_toEndOf="@+id/dateSightEt"
-        tools:ignore="UnknownId"
-        />
+        tools:ignore="UnknownId" />
+
+
+
 
     <Button
-        android:id="@+id/addBirdBtn"
+        android:id="@+id/submitbutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add Bird"
@@ -177,6 +175,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+
+
+
         />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

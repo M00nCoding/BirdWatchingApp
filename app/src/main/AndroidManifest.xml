@@ -40,9 +40,8 @@
         <activity android:name=".HomeActivity" android:exported="false" />
 
         <!-- Add Bird Activity -->
-        <activity android:name=".AddBirdsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.WingWatch.NoActionBar" />
+        <activity android:name=".AddBirdsActivity" />
+
 
     </application>
 

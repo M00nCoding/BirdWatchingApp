@@ -7,7 +7,6 @@
 
     <!-- Logo, Title, and User Icon -->
 
-    <!-- Navigation Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,60 +60,17 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/navigationBar"
+    <!-- Map Fragment -->
+    <FrameLayout
+        android:id="@+id/map_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#d9b38c"
-        android:padding="6dp"
-        android:weightSum="4">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id = "@+id/menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Menu"
-            android:textColor="#3d2b1f"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_weight="1"
-            android:textAlignment="center" />
-
-        <Button
-            android:id="@+id/hotspots"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hotspots"
-            android:textColor="#3d2b1f"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_weight="1"
-            android:textAlignment="center" />
-
-        <Button
-            android:id="@+id/goals"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Goals"
-            android:textColor="#3d2b1f"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_weight="1"
-            android:textAlignment="center" />
-
-        <Button
-            android:id="@+id/birds"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Birds"
-            android:textColor="#3d2b1f"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_weight="1"
-            android:textAlignment="center" />
-    </LinearLayout>
-
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
 </LinearLayout>

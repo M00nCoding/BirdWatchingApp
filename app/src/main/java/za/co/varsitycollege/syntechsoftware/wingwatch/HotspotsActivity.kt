@@ -1,31 +1,92 @@
 package za.co.varsitycollege.syntechsoftware.wingwatch
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.location.Location
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import android.Manifest
-import android.location.Location
-import android.widget.Toast
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.maps.android.PolyUtil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import za.co.varsitycollege.syntechsoftware.wingwatch.network.OSRMService
+import za.co.varsitycollege.syntechsoftware.wingwatch.models.OSRMRouteResponse
 
-class HotspotsActivity: AppCompatActivity(), OnMapReadyCallback {
+class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private val LOCATION_REQUEST_CODE = 101
+    private val locationRequestCode = 101
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var map: GoogleMap
+    private lateinit var userLocation: LatLng
+
+    // Updated list of predefined hotspots with more locations
+    private val predefinedHotspots = listOf(
+        LatLng(-34.0181, 18.4241),  // Cape Town
+        LatLng(-25.7461, 28.1881),  // Pretoria
+        LatLng(-26.2041, 28.0473),  // Johannesburg
+        LatLng(-33.9249, 18.4241),  // Cape Town (Table Mountain)
+        LatLng(-29.8587, 31.0218),  // Durban
+        LatLng(-34.0522, 18.5562),  // Hermanus
+        LatLng(-33.9333, 22.4676),  // Knysna
+        LatLng(-32.3899, 26.8212),  // East London
+        LatLng(-28.4791, 30.3792),  // Underberg
+        LatLng(-29.5972, 30.5967),  // Howick
+        LatLng(-32.2185, 27.9509),  // Port Elizabeth
+        LatLng(-29.4486, 30.5552),  // Pietermaritzburg
+        LatLng(-28.4142, 24.8474),  // Klerksdorp
+        // National Parks
+        LatLng(-24.9965, 31.5547),  // Kruger National Park
+        LatLng(-33.9714, 19.2234),  // Table Mountain National Park
+        LatLng(-29.0643, 28.5764),  // Addo Elephant National Park
+        LatLng(-22.0437, 14.7818),  // Kgalagadi Transfrontier Park
+        LatLng(-34.0515, 20.2258),  // Bontebok National Park
+        LatLng(-31.8017, 26.5504),  // Mountain Zebra National Park
+        LatLng(-31.5645, 24.1443),  // Karoo National Park
+        LatLng(-33.5424, 19.1604),  // West Coast National Park
+        LatLng(-29.0651, 30.4952),  // Ujung Kulon National Park
+        LatLng(-25.5000, 28.8600),  // Marakele National Park
+        LatLng(-29.5000, 31.0000),  // Hluhluwe-Imfolozi Park
+        LatLng(-26.5345, 27.8553),  // Pilanesberg National Park
+        LatLng(-29.1150, 31.0025),  // iSimangaliso Wetland Park
+        LatLng(-32.1432, 22.4528),  // Addo Elephant National Park (Zuurberg)
+        LatLng(-33.7712, 18.3713),  // Cape Point Nature Reserve
+        // Additional Hotspots
+        LatLng(-24.7917, 30.1648),  // Blyde River Canyon
+        LatLng(-28.1506, 26.2304),  // Golden Gate Highlands National Park
+        LatLng(-33.9587, 22.6599),  // Tsitsikamma National Park
+        LatLng(-29.0469, 29.2242),  // Royal Natal National Park
+        LatLng(-26.1313, 27.8694),  // Cradle of Humankind
+        LatLng(-25.7038, 28.7762),  // Dinokeng Game Reserve
+        LatLng(-33.7265, 19.2584),  // Agulhas National Park
+        LatLng(-28.8003, 30.8780),  // Drakensberg Mountains
+        LatLng(-34.1845, 19.2921),  // De Hoop Nature Reserve
+        LatLng(-33.5881, 18.3386),  // Kirstenbosch National Botanical Garden
+        LatLng(-29.8628, 31.0223),  // Oribi Gorge Nature Reserve
+        LatLng(-25.7941, 29.5261),  // Mpumalanga Nature Reserve
+        LatLng(-29.4127, 30.0855),  // Sani Pass
+        LatLng(-34.4102, 19.4240),  // Ceres Valley
+        LatLng(-26.1118, 28.9650),  // Delta Park
+        LatLng(-29.5170, 30.6546),  // Balgowan
+        LatLng(-26.0661, 28.5134),  // Modderfontein Reserve
+        LatLng(-29.8722, 31.0413)   // False Bay Nature Reserve
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +95,9 @@ class HotspotsActivity: AppCompatActivity(), OnMapReadyCallback {
         // Initialize the map fragment
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        // Initialize the FusedLocationProviderClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Check and request location permissions
         checkLocationPermission()
@@ -46,110 +110,153 @@ class HotspotsActivity: AppCompatActivity(), OnMapReadyCallback {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                locationRequestCode
             )
         } else {
-            // Permission is already granted
             getUserLocation()
         }
     }
 
     private fun getUserLocation() {
-        // Check if the location permission is granted
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-            // Get the last known location
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 location?.let {
-                    // If location is found, get latitude and longitude
-                    val latitude = it.latitude
-                    val longitude = it.longitude
-
-                    // Fetch nearby bird hotspots using these coordinates
-                    fetchNearbyBirdHotspots(latitude, longitude)
+                    userLocation = LatLng(it.latitude, it.longitude)
+                    addHotspotsToMap()  // Adding predefined hotspots to the map
                 } ?: run {
-                    // Handle case where location is null (GPS turned off, etc.)
                     Toast.makeText(this, "Unable to get current location", Toast.LENGTH_LONG).show()
                 }
-            }
-        } else {
-            // Request location permission if it's not granted
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE
-            )
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_REQUEST_CODE) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                // Permission was granted, fetch the user location
-                getUserLocation()
-            } else {
-                // Permission denied, show a message to the user
-                Toast.makeText(this, "Location permission is required to use this feature", Toast.LENGTH_LONG).show()
+            }.addOnFailureListener {
+                Toast.makeText(this, "Error fetching location: ${it.message}", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
 
-    private fun fetchNearbyBirdHotspots(lat: Double, lng: Double) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.ebird.org/v2/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
 
-        val eBirdService = retrofit.create(EBirdService::class.java)
 
-        eBirdService.getNearbyHotspots(lat, lng, 10, "q1lknch0u797")
-            .enqueue(object : Callback<List<Hotspot>> {
-                override fun onResponse(
-                    call: Call<List<Hotspot>>, response: Response<List<Hotspot>>
-                ) {
-                    val hotspots = response.body()
-                    hotspots?.let {
-                        // Display hotspots on the map
-                        addHotspotsToMap(it)
-                    }
-                }
-
-                override fun onFailure(call: Call<List<Hotspot>>, t: Throwable) {
-                    // Handle failure
-                }
-            })
-    }
-
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
-        // Enable user location if permission is granted
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
             map.isMyLocationEnabled = true
         }
+
+        map.setOnMarkerClickListener { marker ->
+            calculateRouteToHotspot(marker.position)
+            true
+        }
     }
 
-    private fun addHotspotsToMap(hotspots: List<Hotspot>) {
-        for (hotspot in hotspots) {
-            val location = LatLng(hotspot.lat, hotspot.lng)
-            map.addMarker(MarkerOptions().position(location).title(hotspot.locName))
+
+    // Function to resize the marker icon
+    private fun resizeMarkerIcon(iconResId: Int, width: Int, height: Int): Bitmap {
+        // Decode the resource to a Bitmap
+        val imageBitmap = BitmapFactory.decodeResource(resources, iconResId)
+        // Scale the bitmap to the desired size
+        return Bitmap.createScaledBitmap(imageBitmap, width, height, false)
+    }
+
+
+    private fun addHotspotsToMap() {
+        // Resize the custom marker icon to your desired size (e.g., 100x100 pixels)
+        val resizedIcon = BitmapDescriptorFactory.fromBitmap(resizeMarkerIcon(R.drawable.ic_bird_marker, 100, 100))
+
+        // Add the resized icon to each hotspot marker
+        predefinedHotspots.forEach { hotspot ->
+            map.addMarker(
+                MarkerOptions()
+                    .position(hotspot)
+                    .title("Hotspot")
+                    .icon(resizedIcon) // Use the resized icon here
+            )
         }
 
-        // Move the camera to the first hotspot
-        if (hotspots.isNotEmpty()) {
-            val firstHotspot = LatLng(hotspots[0].lat, hotspots[0].lng)
+        // Center the camera to the first hotspot
+        if (predefinedHotspots.isNotEmpty()) {
+            val firstHotspot = predefinedHotspots[0]
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(firstHotspot, 12f))
         }
+    }
+
+    private fun calculateRouteToHotspot(destination: LatLng) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://router.project-osrm.org/")  // Use HTTPS for secure connection
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val osrmService = retrofit.create(OSRMService::class.java)
+        val coordinates =
+            "${userLocation.longitude},${userLocation.latitude};${destination.longitude},${destination.latitude}"
+
+        osrmService.getRoute(coordinates).enqueue(object : Callback<OSRMRouteResponse> {
+            @SuppressLint("DefaultLocale")
+            override fun onResponse(
+                call: Call<OSRMRouteResponse>,
+                response: Response<OSRMRouteResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val routes = response.body()?.routes
+                    if (!routes.isNullOrEmpty()) {
+                        val polyline = routes[0].geometry
+                        val distance = routes[0].distance / 1000  // Convert distance to km
+                        val duration = routes[0].duration / 60    // Convert duration to minutes
+
+                        // Rounding distance and duration to 2 decimal places
+                        val roundedDistance = String.format("%.2f", distance)
+                        val roundedDuration = String.format("%.2f", duration)
+
+                        drawRouteOnMap(polyline)
+                        Toast.makeText(
+                            this@HotspotsActivity,
+                            "Distance: $roundedDistance km, Duration: $roundedDuration min",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(this@HotspotsActivity, "No routes found", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@HotspotsActivity,
+                        "Error fetching route: ${response.message()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<OSRMRouteResponse>, t: Throwable) {
+                Toast.makeText(
+                    this@HotspotsActivity,
+                    "Failed to calculate route: ${t.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+
+
+
+    private fun drawRouteOnMap(encodedPolyline: String) {
+        val decodedPath = PolyUtil.decode(encodedPolyline)
+        val polylineOptions = PolylineOptions()
+            .addAll(decodedPath)
+            .color(android.graphics.Color.BLUE)
+            .width(10f)
+
+        map.addPolyline(polylineOptions)
     }
 
 }

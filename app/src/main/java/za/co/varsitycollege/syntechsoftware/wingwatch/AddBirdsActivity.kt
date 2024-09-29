@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.*
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
@@ -19,6 +18,7 @@ import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Suppress("DEPRECATION")
 class AddBirdsActivity : AppCompatActivity() {
 
     private lateinit var birdImageIV: ImageView
@@ -34,14 +34,26 @@ class AddBirdsActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var imageBitmap: Bitmap
 
-    private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_addbird)
 
         // Initialize Firebase
         FirebaseApp.initializeApp(this)
+
+        val hotspotsButton: Button = findViewById(R.id.hotspots)
+        val homeButton: Button = findViewById(R.id.home)
+
+
+
+        homeButton.setOnClickListener {
+            startActivity(Intent(this, HomeActivity::class.java))
+        }
+
+        // Navigate to HotspotsActivity (Hotspots - Navigation bar)
+        hotspotsButton.setOnClickListener {
+            startActivity(Intent(this, HotspotsActivity::class.java))
+        }
 
         birdImageIV = findViewById(R.id.birdImageIV)
         birdImageBtn = findViewById(R.id.birdImageBtn)
@@ -55,29 +67,19 @@ class AddBirdsActivity : AppCompatActivity() {
         dbRef = FirebaseDatabase.getInstance().getReference("birds")
         auth = FirebaseAuth.getInstance()
 
-        // Camera Launcher using Activity Result API
-        cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val extras = result.data?.extras
-                val imageBitmap = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    extras?.getParcelable("data", Bitmap::class.java)
-                } else {
-                    @Suppress("DEPRECATION")
-                    extras?.getParcelable("data")
-                }
-
-                if (imageBitmap != null) {
-                    birdImageIV.setImageBitmap(imageBitmap)
-                    this.imageBitmap = imageBitmap
-                } else {
-                    Toast.makeText(this, "Failed to capture image", Toast.LENGTH_SHORT).show()
-                }
+        //Loads the captured photo into the image view
+        val getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            if(it.resultCode == Activity.RESULT_OK && it.data != null){
+                val bitmap = it.data!!.extras?.get("data") as Bitmap
+                birdImageIV.setImageBitmap(bitmap)
+                imageBitmap = bitmap
             }
         }
 
         // Camera button click event
         birdImageBtn.setOnClickListener {
-            dispatchTakePictureIntent()  // Directly launch the camera
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            getResult.launch(intent)
         }
 
         // Date picker button
@@ -87,20 +89,10 @@ class AddBirdsActivity : AppCompatActivity() {
 
         // Submit bird button
         submitBirdBtn.setOnClickListener {
-            if (validateInputs()) {
-                if (::imageBitmap.isInitialized) {
-                    saveBirdDataWithImage()
-                } else {
-                    saveBirdData()
-                }
+            if(validateInputs()){
+                saveBirdData()
             }
         }
-    }
-
-    // Launch camera intent
-    private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        cameraLauncher.launch(takePictureIntent)
     }
 
     private fun showDatePickerDialog() {
@@ -127,6 +119,11 @@ class AddBirdsActivity : AppCompatActivity() {
         val birdDescription = birdDescriptionET.text.toString().trim()
         val birdLocation = locationET.text.toString().trim()
         val dateSighted = dateSightTv.text.toString().trim()
+
+        if(!::imageBitmap.isInitialized){
+            Toast.makeText(this, "Please take a photo of the bird", Toast.LENGTH_SHORT).show()
+            return false
+        }
 
         if (birdName.isEmpty()) {
             birdNameET.error = "Enter Bird Name"
@@ -157,26 +154,6 @@ class AddBirdsActivity : AppCompatActivity() {
         val birdLocation = locationET.text.toString()
         val dateSighted = dateSightTv.text.toString()
 
-        val birdId = dbRef.push().key!!
-        val uid = auth.currentUser?.uid.toString()
-
-        val bird = BirdModel(birdId, birdName, birdDescription, birdLocation, dateSighted, "", uid)
-
-        dbRef.child(birdId).setValue(bird)
-            .addOnCompleteListener {
-                Toast.makeText(this, "Bird added successfully!", Toast.LENGTH_LONG).show()
-                clearFields()
-            }.addOnFailureListener { err ->
-                Toast.makeText(this, "Error ${err.message}", Toast.LENGTH_LONG).show()
-            }
-    }
-
-    private fun saveBirdDataWithImage() {
-        val birdName = birdNameET.text.toString()
-        val birdDescription = birdDescriptionET.text.toString()
-        val birdLocation = locationET.text.toString()
-        val dateSighted = dateSightTv.text.toString()
-
         uploadBitmapToFirebase(imageBitmap, birdName) { imageUrl ->
             val birdId = dbRef.push().key!!
             val uid = auth.currentUser?.uid.toString()
@@ -196,10 +173,12 @@ class AddBirdsActivity : AppCompatActivity() {
     private fun uploadBitmapToFirebase(bitmap: Bitmap, imageName: String, callback: (String) -> Unit) {
         val storageReference = FirebaseStorage.getInstance().reference.child("bird_images/$imageName.jpg")
 
+        //Convert bitmap to byte array
         val outputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         val data = outputStream.toByteArray()
 
+        //Upload image to firebase storage
         storageReference.putBytes(data)
             .addOnSuccessListener {
                 storageReference.downloadUrl.addOnSuccessListener { uri ->
@@ -217,6 +196,6 @@ class AddBirdsActivity : AppCompatActivity() {
         birdDescriptionET.text.clear()
         locationET.text.clear()
         dateSightTv.text = ""
-        birdImageIV.setImageResource(0)
+        birdImageIV.setImageResource(R.drawable.bird_image)
     }
 }

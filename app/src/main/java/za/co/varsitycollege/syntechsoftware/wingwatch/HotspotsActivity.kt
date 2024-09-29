@@ -2,14 +2,18 @@ package za.co.varsitycollege.syntechsoftware.wingwatch
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.preference.PreferenceManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -35,6 +39,10 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var map: GoogleMap
     private lateinit var userLocation: LatLng
+
+
+
+
 
     // Updated list of predefined hotspots with more locations
     private val predefinedHotspots = listOf(
@@ -95,6 +103,31 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Initialize the map fragment
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        val birdsButton: Button = findViewById(R.id.birds)
+        val homeButton: Button = findViewById(R.id.home)
+        val logoutIcon: ImageView = findViewById(R.id.logout)
+        val settingsIcon: ImageView = findViewById(R.id.settingsIcon)
+
+        // Navigate to AddBirdsActivity (Birds - Navigation bar)
+        birdsButton.setOnClickListener {
+            startActivity(Intent(this, AddBirdsActivity::class.java))
+        }
+
+        // Navigate to AddBirdsActivity (Birds - Navigation bar)
+        homeButton.setOnClickListener {
+            startActivity(Intent(this, HomeActivity::class.java))
+        }
+
+        // Navigate to SettingsActivity (Settings)
+        settingsIcon.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+
+        // Set logout button click listener (Log out)
+        logoutIcon.setOnClickListener {
+            logoutUser()  // Call the logout function
+        }
+
 
         // Initialize the FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -102,6 +135,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Check and request location permissions
         checkLocationPermission()
     }
+
 
     private fun checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(
@@ -257,6 +291,22 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
             .width(10f)
 
         map.addPolyline(polylineOptions)
+    }
+
+    fun logoutUser() {
+        // Clear shared preferences or any stored session
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val editor = preferences.edit()
+        editor.clear()  // Clears all saved data
+        editor.apply()
+
+        // Redirect to LoginActivity
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // Clear activity stack
+        startActivity(intent)
+
+        // Show a message to the user
+        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
     }
 
 }

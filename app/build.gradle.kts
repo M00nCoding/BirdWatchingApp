@@ -52,6 +52,11 @@ dependencies {
     implementation("org.bouncycastle:bcprov-jdk15to18:1.70")
     //noinspection UseTomlInstead
     implementation("com.google.firebase:firebase-auth:23.0.0")
+
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+
+    implementation ("com.github.bumptech.glide:compiler:4.12.0")
+
     //noinspection UseTomlInstead
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
 

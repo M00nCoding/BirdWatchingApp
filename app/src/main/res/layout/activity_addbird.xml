@@ -9,22 +9,23 @@
     tools:context=".AddBirdsActivity">
 
 
+
     <!-- ImageView with Circular Shape -->
-    <ImageView
-        android:id="@+id/birdImageIV"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:src="@drawable/bird_image"
-        android:background="@drawable/circle_shape"
-        android:scaleType="centerCrop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="110dp"
-        android:layout_marginEnd="110dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"/>
 
     <!-- Take Photo Button (overlaying the bottom right of the ImageView) -->
+
+    <ImageView
+        android:id="@+id/birdImageIV"
+        android:layout_width="193dp"
+        android:layout_height="194dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/circle_shape"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bird_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageButton
         android:id="@+id/birdImageBtn"
         android:layout_width="60dp"
@@ -48,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="30dp"
         android:background="@drawable/input_bg"
         android:backgroundTint="@color/white"
@@ -61,6 +62,7 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/birdImageIV"
         tools:ignore="TouchTargetSizeCheck" />
@@ -130,56 +132,80 @@
         app:layout_constraintEnd_toStartOf="@+id/birdDateFoundBtn"
         />
 
+
+    <!-- Navigation Bar -->
+
     <Button
         android:id="@+id/birdDateFoundBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Date"
-        android:textSize="20sp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="28dp"
         android:backgroundTint="@color/brown"
         android:paddingStart="20dp"
-        android:paddingEnd="20dp"
         android:paddingTop="10dp"
+        android:paddingEnd="20dp"
         android:paddingBottom="10dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
-        android:layout_marginEnd="30dp"
+        android:text="Date"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/locationEt"
         app:layout_constraintStart_toEndOf="@+id/dateSightEt"
+        app:layout_constraintTop_toBottomOf="@id/locationEt"
         tools:ignore="UnknownId" />
-
-
-
 
     <Button
         android:id="@+id/submitbutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Bird"
-        android:textSize="20sp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:backgroundTint="@color/brown"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="13dp"
-        android:paddingBottom="13dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="120dp"
+        android:backgroundTint="@color/brown"
+        android:paddingStart="20dp"
+        android:paddingTop="13dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="13dp"
+        android:text="Add Bird"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/navigationBar"
+        android:layout_width="410dp"
+        android:layout_height="85dp"
+        android:background="#d9b38c"
+        android:orientation="horizontal"
+        android:padding="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="1dp">
 
 
+        <Button
+            android:id="@+id/home"
+            android:layout_width="178dp"
+            android:layout_height="65dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="Observations"
+            android:textColor="#3d2b1f" />
 
-        />
-
-
+        <Button
+            android:id="@+id/hotspots"
+            android:layout_width="191dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="Hotspots"
+            android:textAlignment="center"
+            android:textColor="#3d2b1f" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

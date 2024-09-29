@@ -7,6 +7,9 @@
 
     <!-- Logo, Title, and User Icon -->
 
+
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,11 +32,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginTop="45dp"
             android:gravity="center"
-            android:text="Bird Observations"
+            android:text="Hotspots"
             android:textColor="#3d2b1f"
             android:textSize="24sp" />
 
+        <ImageView
+            android:id="@+id/settingsIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="1dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="Settings icon"
+            android:scaleType="centerCrop"
+            android:src="@drawable/settings" />
+
+        <!--
         <ImageView
             android:id="@+id/userIcon"
             android:layout_width="40dp"
@@ -44,7 +60,7 @@
             android:contentDescription="User icon"
             android:scaleType="centerCrop"
             android:src="@drawable/user_icon" />
-
+-->
         <ImageView
             android:id="@+id/logout"
             android:layout_width="40dp"
@@ -58,6 +74,49 @@
             android:src="@drawable/logout"
             tools:ignore="TouchTargetSizeCheck" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/navigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#d9b38c"
+        android:padding="6dp"
+        android:weightSum="4">
+
+        <!-- part of the goals for part 3
+        <Button
+            android:id="@+id/goals"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Goals"
+            android:textColor="#3d2b1f"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_weight="1"
+            android:textAlignment="center" />
+-->
+        <Button
+            android:id="@+id/home"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="Observations"
+            android:textAlignment="center"
+            android:textColor="#3d2b1f" />
+
+        <Button
+            android:id="@+id/birds"
+            android:layout_width="117dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="Add Birds"
+            android:textAlignment="textEnd"
+            android:textColor="#3d2b1f" />
     </LinearLayout>
 
     <!-- Map Fragment -->

@@ -1,9 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f1d9bd">
+    android:background="#f1d9bd"
+    android:orientation="vertical">
 
     <!-- Logo, Title, and User Icon -->
 
@@ -36,15 +36,15 @@
             android:textSize="24sp" />
 
         <ImageView
-            android:id="@+id/userIcon"
+            android:id="@+id/settingsIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="1dp"
             android:adjustViewBounds="true"
-            android:contentDescription="User icon"
+            android:contentDescription="Settings icon"
             android:scaleType="centerCrop"
-            android:src="@drawable/user_icon" />
+            android:src="@drawable/settings" />
 
         <ImageView
             android:id="@+id/logout"
@@ -58,68 +58,48 @@
             android:scaleType="centerCrop"
             android:src="@drawable/logout"
             tools:ignore="TouchTargetSizeCheck" />
-
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:background="#d9b38c"
+        android:orientation="horizontal"
         android:padding="6dp"
         android:weightSum="4">
 
         <Button
-            android:id = "@+id/menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Menu"
-            android:textColor="#3d2b1f"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_weight="1"
-            android:textAlignment="center" />
-
-        <Button
             android:id="@+id/hotspots"
-            android:layout_width="wrap_content"
+            android:layout_width="191dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
             android:text="Hotspots"
-            android:textColor="#3d2b1f"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_weight="1"
-            android:textAlignment="center" />
-
-        <Button
-            android:id="@+id/goals"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Goals"
-            android:textColor="#3d2b1f"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_weight="1"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="#3d2b1f" />
 
         <Button
             android:id="@+id/birds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Birds"
-            android:textColor="#3d2b1f"
-            android:background="?android:attr/selectableItemBackground"
             android:layout_weight="1"
-            android:textAlignment="center" />
+            android:background="?android:attr/selectableItemBackground"
+            android:text="Add Birds"
+            android:textAlignment="center"
+            android:textColor="#3d2b1f" />
     </LinearLayout>
 
     <!-- ScrollView for Bird Items -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.8"
         android:layout_marginTop="10dp"
+        android:layout_weight="0.8"
         android:padding="16dp">
 
         <LinearLayout
+            android:id="@+id/birdsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -132,6 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:orientation="vertical">
+
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
@@ -148,8 +129,8 @@
                     android:paddingTop="4dp"
                     android:text="Common Name: Southern Red Bishop"
                     android:textColor="#3d2b1f"
-                    android:textStyle="bold"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -160,26 +141,8 @@
                     android:textColor="#3d2b1f" />
             </LinearLayout>
 
-            <!-- Other bird items -->
-
         </LinearLayout>
+
     </ScrollView>
 
-    <!-- Clickable ImageView Outside ScrollView -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:padding="8dp"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/cameraIcon"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:onClick="onClickableImageClick"
-            android:contentDescription="Camera icon"
-            android:src="@drawable/camera_icon" />
-    </LinearLayout>
 </LinearLayout>

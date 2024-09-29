@@ -61,30 +61,30 @@ class LoginActivity : AppCompatActivity() {
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // User found, now check the password
-                    var userFound = false
+                    // Username exists, retrieve the email associated with this username
                     for (userSnapshot in dataSnapshot.children) {
-                        val storedPassword = userSnapshot.child("password").value.toString()
-                        val hashedInputPassword = hashPassword(password)
+                        val email = userSnapshot.child("email").value.toString()
 
-                        if (storedPassword == hashedInputPassword) {
-                            // Login successful
-                            val userId = userSnapshot.child("userId").value.toString()
-                            Toast.makeText(this@LoginActivity, "Login successful", Toast.LENGTH_SHORT).show()
+                        // Now authenticate the user with FirebaseAuth using the email and password
+                        auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(this@LoginActivity) { task ->
+                                if (task.isSuccessful) {
+                                    // Login successful
+                                    val userId = auth.currentUser?.uid
+                                    Toast.makeText(this@LoginActivity, "Login successful", Toast.LENGTH_SHORT).show()
 
-                            // Redirect to HomeActivity
-                            val intent = Intent(this@LoginActivity, HomeActivity::class.java)
-                            intent.putExtra("userId", userId)
-                            intent.putExtra("username", username)
-                            startActivity(intent)
-                            finish()
-                            userFound = true
-                            break // Exit after successful login
-                        }
-                    }
-                    if (!userFound) {
-                        // Password incorrect
-                        Toast.makeText(this@LoginActivity, "Invalid password. Please try again.", Toast.LENGTH_SHORT).show()
+                                    // Redirect to HomeActivity
+                                    val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                                    intent.putExtra("userId", userId)
+                                    intent.putExtra("username", username)
+                                    startActivity(intent)
+                                    finish()
+                                } else {
+                                    // Authentication failed (e.g., wrong password)
+                                    Toast.makeText(this@LoginActivity, "Invalid password. Please try again.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        break // Exit after finding the first match
                     }
                 } else {
                     // Username not found
@@ -97,12 +97,5 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this@LoginActivity, "Database error: ${databaseError.message}", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-
-    // Function to hash the password using SHA-256
-    private fun hashPassword(password: String): String {
-        val digest = org.bouncycastle.jcajce.provider.digest.SHA256.Digest()
-        val hash = digest.digest(password.toByteArray())
-        return org.bouncycastle.util.encoders.Hex.toHexString(hash)
     }
 }

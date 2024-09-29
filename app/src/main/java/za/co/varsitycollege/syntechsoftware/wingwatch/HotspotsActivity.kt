@@ -160,7 +160,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    // Function to resize the marker icon
+    // Function to resize the marker icon and ensure it has the shape of a location pin
     private fun resizeMarkerIcon(iconResId: Int, width: Int, height: Int): Bitmap {
         // Decode the resource to a Bitmap
         val imageBitmap = BitmapFactory.decodeResource(resources, iconResId)
@@ -170,8 +170,8 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun addHotspotsToMap() {
-        // Resize the custom marker icon to your desired size (e.g., 100x100 pixels)
-        val resizedIcon = BitmapDescriptorFactory.fromBitmap(resizeMarkerIcon(R.drawable.ic_bird_marker, 100, 100))
+        // Replace ic_location_pin with your location-shaped icon
+        val resizedIcon = BitmapDescriptorFactory.fromBitmap(resizeMarkerIcon(R.drawable.bird_map_icon, 100, 100))
 
         // Add the resized icon to each hotspot marker
         predefinedHotspots.forEach { hotspot ->
@@ -179,7 +179,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
                 MarkerOptions()
                     .position(hotspot)
                     .title("Hotspot")
-                    .icon(resizedIcon) // Use the resized icon here
+                    .icon(resizedIcon) // Use the location pin icon here
             )
         }
 

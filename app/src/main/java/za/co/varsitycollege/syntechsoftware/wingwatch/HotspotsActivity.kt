@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
@@ -24,6 +25,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.maps.android.PolyUtil
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,9 +47,10 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var userLocation: LatLng
 
+    private lateinit var database: DatabaseReference
+    private lateinit var auth: FirebaseAuth
 
-
-
+    private lateinit var settingsListener: ValueEventListener
 
     // Updated list of predefined hotspots with more locations
     private val predefinedHotspots = listOf(
@@ -100,22 +108,34 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_hotspots)
 
-        // Initialize the map fragment
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-        val birdsButton: Button = findViewById(R.id.birds)
+        // Database reference
+        database = FirebaseDatabase.getInstance().getReference("settings")
+        auth = FirebaseAuth.getInstance()
+
+        fetchSettingsFromFirebase()
+
+        //Initialize
         val homeButton: Button = findViewById(R.id.home)
-        val logoutIcon: ImageView = findViewById(R.id.logout)
+        val birdsButton: Button = findViewById(R.id.birds)
         val settingsIcon: ImageView = findViewById(R.id.settingsIcon)
+        val logoutIcon: ImageView = findViewById(R.id.logout)
+
+        // Navigate to HomeActivity (Menu - Navigation bar)
+        homeButton.setOnClickListener {
+            startActivity(Intent(this, HomeActivity::class.java))
+        }
+
+
+        /*
+        //Not yet functional (Goals - Navigation bar)
+        goalsButton.setOnClickListener {
+            startActivity(Intent(this, goalsButton::class.java))
+        }
+        */
 
         // Navigate to AddBirdsActivity (Birds - Navigation bar)
         birdsButton.setOnClickListener {
             startActivity(Intent(this, AddBirdsActivity::class.java))
-        }
-
-        // Navigate to AddBirdsActivity (Birds - Navigation bar)
-        homeButton.setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
         }
 
         // Navigate to SettingsActivity (Settings)
@@ -128,6 +148,9 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
             logoutUser()  // Call the logout function
         }
 
+        // Initialize the map fragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
 
         // Initialize the FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -135,7 +158,6 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Check and request location permissions
         checkLocationPermission()
     }
-
 
     private fun checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(
@@ -162,7 +184,6 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 location?.let {
                     userLocation = LatLng(it.latitude, it.longitude)
-                    addHotspotsToMap()  // Adding predefined hotspots to the map
                 } ?: run {
                     Toast.makeText(this, "Unable to get current location", Toast.LENGTH_LONG).show()
                 }
@@ -173,7 +194,68 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    // Simulate fetching maxTravelDistance and measurementUnit from Firebase
+    private fun fetchSettingsFromFirebase() {
+        val uid = auth.currentUser?.uid
 
+        if (uid != null) {
+            // Query Firebase for settings related to the current user
+            settingsListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.d("SettingsFetch", "Snapshot: ${snapshot.value}")
+
+                    if (snapshot.exists()) {
+                        // Fetch the first available settings
+                        for (childSnapshot in snapshot.children) {
+                            val maxTravelDistanceStr = childSnapshot.child("maxTravelDistance").getValue(String::class.java)
+                            val measurementUnit = childSnapshot.child("measurementUnit").getValue(String::class.java) ?: "Kilometers"
+
+                            val maxTravelDistance = maxTravelDistanceStr?.toFloatOrNull()
+
+                            // Call a function to update the hotspots based on settings
+                            updateHotspots(maxTravelDistance, measurementUnit)
+                            break // Process the first valid match
+                        }
+                    } else {
+                        Log.e("SettingsFetch", "No settings found for the current user.")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("SettingsFetch", "Failed to fetch settings: ${error.message}")
+                }
+            }
+
+            // Start listening for settings changes
+            database.orderByChild("userId").equalTo(uid).addValueEventListener(settingsListener)
+        } else {
+            Log.e("SettingsFetch", "User not logged in.")
+        }
+    }
+
+    private fun updateHotspots(maxTravelDistance: Float?, measurementUnit: String) {
+        // Convert maxTravelDistance to kilometers if needed
+        val distanceInKilometers = if (measurementUnit == "Miles") {
+            maxTravelDistance?.times(1.60934f)  // Convert miles to kilometers
+        } else {
+            maxTravelDistance  // Already in kilometers
+        }
+
+        // Update the map with hotspots based on the fetched settings
+        if (distanceInKilometers == null) {
+            addHotspotsToMap(-1f)  // -1 means no limit
+        } else {
+            addHotspotsToMap(distanceInKilometers)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Remove the listener to avoid memory leaks
+        if (::settingsListener.isInitialized) {
+            database.removeEventListener(settingsListener)
+        }
+    }
 
     @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
@@ -193,7 +275,6 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-
     // Function to resize the marker icon and ensure it has the shape of a location pin
     private fun resizeMarkerIcon(iconResId: Int, width: Int, height: Int): Bitmap {
         // Decode the resource to a Bitmap
@@ -202,13 +283,43 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         return Bitmap.createScaledBitmap(imageBitmap, width, height, false)
     }
 
+    private fun distanceBetween(latLng1: LatLng, latLng2: LatLng): Float {
+        val location1 = Location("").apply {
+            latitude = latLng1.latitude
+            longitude = latLng1.longitude
+        }
+        val location2 = Location("").apply {
+            latitude = latLng2.latitude
+            longitude = latLng2.longitude
+        }
+        return location1.distanceTo(location2) // Distance in meters
+    }
 
-    private fun addHotspotsToMap() {
+    private fun filterHotspotsByDistance(maxDistance: Float): List<LatLng> {
+        return if (maxDistance == -1f) {
+            // Return all hotspots if maxDistance is -1 (indicating that max distance is not found)
+            predefinedHotspots
+        } else {
+            // Filter hotspots based on the distance if maxDistance is set
+            predefinedHotspots.filter { hotspot ->
+                val distance = distanceBetween(userLocation, hotspot)
+                distance <= maxDistance * 1000  // Convert maxDistance to meters
+            }
+        }
+    }
+
+    private fun addHotspotsToMap(maxDistance: Float) {
+        // Clear existing markers on the map
+        map.clear()
+
         // Replace ic_location_pin with your location-shaped icon
         val resizedIcon = BitmapDescriptorFactory.fromBitmap(resizeMarkerIcon(R.drawable.bird_map_icon, 100, 100))
 
-        // Add the resized icon to each hotspot marker
-        predefinedHotspots.forEach { hotspot ->
+        // Filter hotspots based on the distance
+        val nearbyHotspots = filterHotspotsByDistance(maxDistance)
+
+        // Add the resized icon to each nearby hotspot marker
+        nearbyHotspots.forEach { hotspot ->
             map.addMarker(
                 MarkerOptions()
                     .position(hotspot)
@@ -217,10 +328,12 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
             )
         }
 
-        // Center the camera to the first hotspot
-        if (predefinedHotspots.isNotEmpty()) {
-            val firstHotspot = predefinedHotspots[0]
+        // Center the camera to the first nearby hotspot
+        if (nearbyHotspots.isNotEmpty()) {
+            val firstHotspot = nearbyHotspots[0]
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(firstHotspot, 12f))
+        } else {
+            Toast.makeText(this, "No hotspots within the specified distance", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -280,9 +393,6 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
-
-
-
     private fun drawRouteOnMap(encodedPolyline: String) {
         val decodedPath = PolyUtil.decode(encodedPolyline)
         val polylineOptions = PolylineOptions()
@@ -308,5 +418,4 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Show a message to the user
         Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
     }
-
 }

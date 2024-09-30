@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+//import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var spMeasurementUnit: Spinner
     private lateinit var etMaxTravelDistance : EditText
     private lateinit var btnSaveSettings : Button
+    private lateinit var editProfileButton : Button
+    private lateinit var backMenuButton : Button
 
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
@@ -37,6 +40,9 @@ class SettingsActivity : AppCompatActivity() {
         spMeasurementUnit = findViewById(R.id.unitMeasurementSpinner)
         etMaxTravelDistance = findViewById(R.id.maxTravelDistanceEt)
         btnSaveSettings = findViewById(R.id.saveSettingsBtn)
+        editProfileButton = findViewById(R.id.editProfileBtn)
+        backMenuButton = findViewById(R.id.backMenuBtn)
+
 
         // Create a list of items for the spinner
         val items = listOf("Select unit of measurement", "Kilometers", "Miles")
@@ -56,17 +62,12 @@ class SettingsActivity : AppCompatActivity() {
             saveSettings()
         }
 
-        //Navigate back to the home page
-        findViewById<Button>(R.id.backSettingsProfileBtn).setOnClickListener{
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
+        // Navigate back to HomeActivity (Menu)
+        backMenuButton.setOnClickListener {
+            startActivity(Intent(this, HomeActivity::class.java))
         }
 
-        //Log out
-        findViewById<Button>(R.id.logoutBtn).setOnClickListener{
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
+
     }
 
     //Save settings function

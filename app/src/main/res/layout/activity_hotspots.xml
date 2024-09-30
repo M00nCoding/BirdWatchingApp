@@ -119,6 +119,8 @@
             android:textColor="#3d2b1f" />
     </LinearLayout>
 
+
+
     <!-- Map Fragment -->
     <FrameLayout
         android:id="@+id/map_container"

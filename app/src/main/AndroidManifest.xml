@@ -51,6 +51,9 @@
         <!-- Hotspots Activity -->
         <activity android:name=".HotspotsActivity" android:exported="false" />
 
+        <!-- Achievements Activity -->
+        <activity android:name=".AchievementsActivity" android:exported="false" />
+
     </application>
 
 </manifest>

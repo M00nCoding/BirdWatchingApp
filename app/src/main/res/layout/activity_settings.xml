@@ -138,7 +138,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit Profile"
+            android:text="Activities"
             android:textSize="18sp"
             android:textColor="@color/primaryTextColor"
             android:textStyle="bold" />
@@ -152,11 +152,11 @@
 
         <!-- Edit Profile Button -->
         <Button
-            android:id="@+id/editProfileBtn"
+            android:id="@+id/viewAchievementsBtn"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:backgroundTint="@color/brown"
-            android:text="Edit Profile"
+            android:text="View achievements"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />

@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bird_on_branch_black_background"
+    tools:context=".AchievementsActivity">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/achievements_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Achievements"
+        android:textColor="#FAF6F6"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/achievement_box_bronze"
+        android:layout_width="350dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/achievements_box"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/achievements_title"
+        />
+
+    <ImageView
+        android:id="@+id/achievement_badge_bronze"
+        android:layout_width="80dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="25dp"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_bronze"
+        app:layout_constraintTop_toBottomOf="@id/achievements_title"
+        app:srcCompat="@drawable/locked_badge" />
+
+    <TextView
+        android:id="@+id/achievement_title_bronze"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Beginner Birder"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_bronze"
+        app:layout_constraintTop_toBottomOf="@id/achievements_title"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="40dp"
+        />
+
+    <TextView
+        android:id="@+id/achievement_desc_bronze"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Capture your first bird observation"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_bronze"
+        app:layout_constraintTop_toBottomOf="@id/achievement_title_bronze"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="0dp"
+        />
+
+    <ProgressBar
+        android:id="@+id/achievement_bar_bronze"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="170dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="5dp"
+        android:scaleY="4"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_bronze"
+        app:layout_constraintTop_toBottomOf="@id/achievement_desc_bronze"
+        />
+
+    <TextView
+        android:id="@+id/achievement_percentage_bronze"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_bronze"
+        app:layout_constraintTop_toBottomOf="@id/achievement_desc_bronze"
+        android:layout_marginLeft="270dp"
+        android:layout_marginTop="5dp"
+        />
+
+
+    <TextView
+        android:id="@+id/achievement_box_silver"
+        android:layout_width="350dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/achievements_box"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/achievement_box_bronze"
+        />
+
+    <ImageView
+        android:id="@+id/achievement_badge_silver"
+        android:layout_width="80dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_silver"
+        app:layout_constraintTop_toBottomOf="@id/achievement_box_bronze"
+        app:srcCompat="@drawable/locked_badge" />
+
+    <TextView
+        android:id="@+id/achievement_title_silver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sky Scanner"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_silver"
+        app:layout_constraintTop_toBottomOf="@id/achievement_box_bronze"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="35dp"
+        />
+
+    <TextView
+        android:id="@+id/achievement_desc_silver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Capture 25 bird observations"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_silver"
+        app:layout_constraintTop_toBottomOf="@id/achievement_title_silver"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="0dp"
+        />
+
+    <ProgressBar
+        android:id="@+id/achievement_bar_silver"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="170dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="5dp"
+        android:scaleY="4"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_silver"
+        app:layout_constraintTop_toBottomOf="@id/achievement_desc_silver"
+        />
+
+    <TextView
+        android:id="@+id/achievement_percentage_silver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_silver"
+        app:layout_constraintTop_toBottomOf="@id/achievement_desc_silver"
+        android:layout_marginLeft="270dp"
+        android:layout_marginTop="5dp"
+        />
+
+
+    <TextView
+        android:id="@+id/achievement_box_gold"
+        android:layout_width="350dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/achievements_box"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/achievement_box_silver"
+        />
+
+    <ImageView
+        android:id="@+id/achievement_badge_gold"
+        android:layout_width="80dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_gold"
+        app:layout_constraintTop_toBottomOf="@id/achievement_box_silver"
+        app:srcCompat="@drawable/locked_badge" />
+
+    <TextView
+        android:id="@+id/achievement_title_gold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Flock Follower"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_gold"
+        app:layout_constraintTop_toBottomOf="@id/achievement_box_silver"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="35dp"
+        />
+
+    <TextView
+        android:id="@+id/achievement_desc_gold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Capture 50 bird observations"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_gold"
+        app:layout_constraintTop_toBottomOf="@id/achievement_title_gold"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="0dp"
+        />
+
+    <ProgressBar
+        android:id="@+id/achievement_bar_gold"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="170dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="5dp"
+        android:scaleY="4"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_gold"
+        app:layout_constraintTop_toBottomOf="@id/achievement_desc_gold"
+        />
+
+    <TextView
+        android:id="@+id/achievement_percentage_gold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_gold"
+        app:layout_constraintTop_toBottomOf="@id/achievement_desc_gold"
+        android:layout_marginLeft="270dp"
+        android:layout_marginTop="5dp"
+        />
+
+    <TextView
+        android:id="@+id/achievement_box_diamond"
+        android:layout_width="350dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/achievements_box"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/achievement_box_gold"
+        />
+
+    <ImageView
+        android:id="@+id/achievement_badge_diamond"
+        android:layout_width="80dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_diamond"
+        app:layout_constraintTop_toBottomOf="@id/achievement_box_gold"
+        app:srcCompat="@drawable/locked_badge" />
+
+    <TextView
+        android:id="@+id/achievement_title_diamond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Master Birdwatcher"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_diamond"
+        app:layout_constraintTop_toBottomOf="@id/achievement_box_gold"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="35dp"
+        />
+
+    <TextView
+        android:id="@+id/achievement_desc_diamond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Capture 100 bird observations"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_diamond"
+        app:layout_constraintTop_toBottomOf="@id/achievement_title_diamond"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="0dp"
+        />
+
+    <ProgressBar
+        android:id="@+id/achievement_bar_diamond"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="170dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="5dp"
+        android:scaleY="4"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_diamond"
+        app:layout_constraintTop_toBottomOf="@id/achievement_desc_diamond"
+        />
+
+    <TextView
+        android:id="@+id/achievement_percentage_diamond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@id/achievement_box_diamond"
+        app:layout_constraintTop_toBottomOf="@id/achievement_desc_diamond"
+        android:layout_marginLeft="270dp"
+        android:layout_marginTop="5dp"
+        />
+
+    <!-- Back Button -->
+    <Button
+        android:id="@+id/achievementsBackBtn"
+        android:layout_width="338dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="@color/brown"
+        android:text="Back"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/achievement_box_diamond" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

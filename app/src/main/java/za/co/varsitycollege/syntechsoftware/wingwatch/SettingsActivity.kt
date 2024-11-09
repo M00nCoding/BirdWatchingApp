@@ -22,7 +22,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var spMeasurementUnit: Spinner
     private lateinit var etMaxTravelDistance : EditText
     private lateinit var btnSaveSettings : Button
-    private lateinit var editProfileButton : Button
+    private lateinit var viewAchievementsButton : Button
     private lateinit var backMenuButton : Button
 
     private lateinit var database: DatabaseReference
@@ -40,7 +40,7 @@ class SettingsActivity : AppCompatActivity() {
         spMeasurementUnit = findViewById(R.id.unitMeasurementSpinner)
         etMaxTravelDistance = findViewById(R.id.maxTravelDistanceEt)
         btnSaveSettings = findViewById(R.id.saveSettingsBtn)
-        editProfileButton = findViewById(R.id.editProfileBtn)
+        viewAchievementsButton = findViewById(R.id.viewAchievementsBtn)
         backMenuButton = findViewById(R.id.backMenuBtn)
 
 
@@ -60,6 +60,11 @@ class SettingsActivity : AppCompatActivity() {
         //Call the saveSettings function when user clicks the 'Save Settings' button
         btnSaveSettings.setOnClickListener{
             saveSettings()
+        }
+
+        // Navigate to achievements
+        viewAchievementsButton.setOnClickListener {
+            startActivity(Intent(this, AchievementsActivity::class.java))
         }
 
         // Navigate back to HomeActivity (Menu)

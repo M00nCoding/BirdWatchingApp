@@ -10,4 +10,9 @@
     <string name="measurement_unit">Measurement Unit</string>
     <string name="user_profile_icon">User Profile Icon</string>
     <string name="arrow_right_icon">Arrow Right Icon</string>
+
+    <!-- activity_user_achievements.xml strings added -->
+    <string name="p_achievement">%d%%</string>
+    <string name="complete_achievement">Completed</string>
+
 </resources>

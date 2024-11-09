@@ -171,9 +171,11 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
                 locationRequestCode
             )
         } else {
-            getUserLocation()
+            getUserLocation() // Get user location if permission is granted
+            displayPredefinedHotspots() // Display hotspots if permission is granted
         }
     }
+
 
     private fun getUserLocation() {
         if (ActivityCompat.checkSelfPermission(
@@ -184,6 +186,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 location?.let {
                     userLocation = LatLng(it.latitude, it.longitude)
+
                 } ?: run {
                     Toast.makeText(this, "Unable to get current location", Toast.LENGTH_LONG).show()
                 }
@@ -194,68 +197,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    // Simulate fetching maxTravelDistance and measurementUnit from Firebase
-    private fun fetchSettingsFromFirebase() {
-        val uid = auth.currentUser?.uid
 
-        if (uid != null) {
-            // Query Firebase for settings related to the current user
-            settingsListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.d("SettingsFetch", "Snapshot: ${snapshot.value}")
-
-                    if (snapshot.exists()) {
-                        // Fetch the first available settings
-                        for (childSnapshot in snapshot.children) {
-                            val maxTravelDistanceStr = childSnapshot.child("maxTravelDistance").getValue(String::class.java)
-                            val measurementUnit = childSnapshot.child("measurementUnit").getValue(String::class.java) ?: "Kilometers"
-
-                            val maxTravelDistance = maxTravelDistanceStr?.toFloatOrNull()
-
-                            // Call a function to update the hotspots based on settings
-                            updateHotspots(maxTravelDistance, measurementUnit)
-                            break // Process the first valid match
-                        }
-                    } else {
-                        Log.e("SettingsFetch", "No settings found for the current user.")
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("SettingsFetch", "Failed to fetch settings: ${error.message}")
-                }
-            }
-
-            // Start listening for settings changes
-            database.orderByChild("userId").equalTo(uid).addValueEventListener(settingsListener)
-        } else {
-            Log.e("SettingsFetch", "User not logged in.")
-        }
-    }
-
-    private fun updateHotspots(maxTravelDistance: Float?, measurementUnit: String) {
-        // Convert maxTravelDistance to kilometers if needed
-        val distanceInKilometers = if (measurementUnit == "Miles") {
-            maxTravelDistance?.times(1.60934f)  // Convert miles to kilometers
-        } else {
-            maxTravelDistance  // Already in kilometers
-        }
-
-        // Update the map with hotspots based on the fetched settings
-        if (distanceInKilometers == null) {
-            addHotspotsToMap(-1f)  // -1 means no limit
-        } else {
-            addHotspotsToMap(distanceInKilometers)
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // Remove the listener to avoid memory leaks
-        if (::settingsListener.isInitialized) {
-            database.removeEventListener(settingsListener)
-        }
-    }
 
     @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
@@ -274,6 +216,84 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
             true
         }
     }
+
+
+    // Simulate fetching maxTravelDistance and measurementUnit from Firebase
+    private fun fetchSettingsFromFirebase() {
+        val uid = auth.currentUser?.uid
+
+        if (uid != null) {
+            settingsListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.d("SettingsFetch", "Snapshot: ${snapshot.value}")
+
+                    if (snapshot.exists()) {
+                        for (childSnapshot in snapshot.children) {
+                            val maxTravelDistanceStr = childSnapshot.child("maxTravelDistance").getValue(String::class.java)
+                            val measurementUnit = childSnapshot.child("measurementUnit").getValue(String::class.java) ?: "Kilometers"
+                            val maxTravelDistance = maxTravelDistanceStr?.toFloatOrNull()
+                            updateHotspots(maxTravelDistance, measurementUnit)
+                            break
+                        }
+                    } else {
+                        Log.e("SettingsFetch", "No settings found for the current user.")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("SettingsFetch", "Failed to fetch settings: ${error.message}")
+                }
+            }
+
+            database.orderByChild("userId").equalTo(uid).addValueEventListener(settingsListener)
+        } else {
+            Log.e("SettingsFetch", "User not logged in.")
+        }
+    }
+
+    private fun updateHotspots(maxTravelDistance: Float?, measurementUnit: String?) {
+        val effectiveMeasurementUnit = measurementUnit ?: "Kilometers"
+        val distanceInKilometers = if (effectiveMeasurementUnit == "Miles") {
+            maxTravelDistance?.times(1.60934f)
+        } else {
+            maxTravelDistance
+        }
+
+        if (distanceInKilometers == null || maxTravelDistance == null) {
+            displayPredefinedHotspots()
+        } else {
+            addHotspotsToMap(distanceInKilometers)
+        }
+    }
+
+    private fun displayPredefinedHotspots() {
+        if (::map.isInitialized) {
+            map.clear() // Clear existing markers
+            // Add predefined hotspots to the map
+            for (hotspot in predefinedHotspots) {
+                map.addMarker(MarkerOptions().position(hotspot).title("Hotspot"))
+            }
+
+
+            // Optionally, move the camera to the first hotspot or user location
+            if (predefinedHotspots.isNotEmpty()) {
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(predefinedHotspots[0], 8f))
+            }
+        } else {
+            Log.e("HotspotsActivity", "Map is not initialized.")
+        }
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Remove the listener to avoid memory leaks
+        if (::settingsListener.isInitialized) {
+            database.removeEventListener(settingsListener)
+        }
+    }
+
+
 
     // Function to resize the marker icon and ensure it has the shape of a location pin
     private fun resizeMarkerIcon(iconResId: Int, width: Int, height: Int): Bitmap {

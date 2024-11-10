@@ -42,6 +42,9 @@ class HomeActivity : AppCompatActivity() {
         val birdsButton: Button = findViewById(R.id.birds)
         val settingsIcon: ImageView = findViewById(R.id.settingsIcon)
         val logoutIcon: ImageView = findViewById(R.id.logout)
+        // Initialize the Achievements and Quiz buttons
+        val achievementsButton: Button = findViewById(R.id.achievementsButton)
+        val quizButton: Button = findViewById(R.id.quizButton)
         birdsContainer = findViewById(R.id.birdsContainer)
 
         /* Navigate to HomeActivity (Menu - Navigation bar)
@@ -57,6 +60,16 @@ class HomeActivity : AppCompatActivity() {
         // Navigate to AddBirdsActivity (Birds - Navigation bar)
         birdsButton.setOnClickListener {
             startActivity(Intent(this, AddBirdsActivity::class.java))
+        }
+
+        // Set up navigation to AchievementsActivity
+        achievementsButton.setOnClickListener {
+            startActivity(Intent(this, AchievementsActivity::class.java))
+        }
+
+        // Set up navigation to QuizActivity
+        quizButton.setOnClickListener {
+            startActivity(Intent(this, QuizActivity::class.java))
         }
 
         // Navigate to SettingsActivity (Settings)

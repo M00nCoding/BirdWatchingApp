@@ -71,23 +71,41 @@
 
         <Button
             android:id="@+id/hotspots"
-            android:layout_width="191dp"
+            android:layout_width="114dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:background="?android:attr/selectableItemBackground"
             android:text="Hotspots"
             android:textAlignment="center"
-            android:textColor="#3d2b1f" />
+            android:textColor="#3d2b1f"
+            android:textSize="11dp" />
 
         <Button
             android:id="@+id/birds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:background="?android:attr/selectableItemBackground"
             android:text="Add Birds"
             android:textAlignment="center"
-            android:textColor="#3d2b1f" />
+            android:textColor="#3d2b1f"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/achievementsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="Goals"
+            android:textAlignment="center"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/quizButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quiz"
+            android:textSize="11sp" />
     </LinearLayout>
 
     <!-- ScrollView for Bird Items -->

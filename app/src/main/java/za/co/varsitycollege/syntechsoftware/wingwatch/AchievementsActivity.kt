@@ -79,7 +79,7 @@ class AchievementsActivity: AppCompatActivity() {
 
         // Navigate to AddBirdsActivity (Birds - Navigation bar)
         backButton.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            startActivity(Intent(this, HomeActivity::class.java))
         }
     }
 

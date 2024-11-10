@@ -51,11 +51,11 @@ dependencies {
     //noinspection UseTomlInstead,UseTomlInstead
     implementation("org.bouncycastle:bcprov-jdk15to18:1.70")
     //noinspection UseTomlInstead
-    implementation("com.google.firebase:firebase-auth:23.0.0")
+    implementation("com.google.firebase:firebase-auth:23.1.0")
 
-    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    implementation (libs.glide)
 
-    implementation ("com.github.bumptech.glide:compiler:4.12.0")
+    annotationProcessor (libs.compiler)
 
     //noinspection UseTomlInstead
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
@@ -71,7 +71,7 @@ dependencies {
     implementation("com.google.maps.android:maps-ktx:2.3.0")
     //noinspection UseTomlInstead
     implementation("com.google.maps.android:android-maps-utils:3.3.0")
-
+    implementation(libs.picasso)
 
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage.ktx)

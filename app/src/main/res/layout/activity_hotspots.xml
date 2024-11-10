@@ -96,11 +96,12 @@
             android:layout_weight="1"
             android:textAlignment="center" />
 -->
+
         <Button
             android:id="@+id/home"
-            android:layout_width="184dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="2dp"
+            android:layout_marginLeft="3dp"
             android:layout_weight="1"
             android:background="?android:attr/selectableItemBackground"
             android:text="Observations"
@@ -109,14 +110,15 @@
 
         <Button
             android:id="@+id/birds"
-            android:layout_width="117dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="2dp"
+            android:layout_marginRight="3dp"
             android:layout_weight="1"
             android:background="?android:attr/selectableItemBackground"
             android:text="Add Birds"
-            android:textAlignment="textEnd"
             android:textColor="#3d2b1f" />
+
+
     </LinearLayout>
 
 

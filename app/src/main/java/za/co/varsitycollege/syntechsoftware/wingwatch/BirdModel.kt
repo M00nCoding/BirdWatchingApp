@@ -7,6 +7,8 @@ data class BirdModel(
     val birdLocation: String = "",
     val dateSighted: String = "",
     val imageUrl: String = "",
-    val userId: String = ""
+    val userId: String = "",
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 )
 

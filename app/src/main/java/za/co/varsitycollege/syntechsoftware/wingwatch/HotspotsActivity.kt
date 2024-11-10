@@ -39,6 +39,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import za.co.varsitycollege.syntechsoftware.wingwatch.network.OSRMService
 import za.co.varsitycollege.syntechsoftware.wingwatch.models.OSRMRouteResponse
+import java.util.Date
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
+import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.os.Looper
+
+
 
 class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -48,6 +56,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var userLocation: LatLng
 
     private lateinit var database: DatabaseReference
+    private lateinit var birdObservationsRef: DatabaseReference
     private lateinit var auth: FirebaseAuth
 
     private lateinit var settingsListener: ValueEventListener
@@ -110,10 +119,9 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Database reference
         database = FirebaseDatabase.getInstance().getReference("settings")
+        birdObservationsRef = FirebaseDatabase.getInstance().getReference("birds")
         auth = FirebaseAuth.getInstance()
-
         fetchSettingsFromFirebase()
-
         //Initialize
         val homeButton: Button = findViewById(R.id.home)
         val birdsButton: Button = findViewById(R.id.birds)
@@ -124,41 +132,64 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         homeButton.setOnClickListener {
             startActivity(Intent(this, HomeActivity::class.java))
         }
-
-
         /*
         //Not yet functional (Goals - Navigation bar)
         goalsButton.setOnClickListener {
             startActivity(Intent(this, goalsButton::class.java))
         }
         */
-
         // Navigate to AddBirdsActivity (Birds - Navigation bar)
         birdsButton.setOnClickListener {
             startActivity(Intent(this, AddBirdsActivity::class.java))
         }
-
         // Navigate to SettingsActivity (Settings)
         settingsIcon.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-
         // Set logout button click listener (Log out)
         logoutIcon.setOnClickListener {
             logoutUser()  // Call the logout function
         }
-
         // Initialize the map fragment
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
         // Initialize the FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
         // Check and request location permissions
         checkLocationPermission()
+
     }
 
+    // Function to add a bird observation at the user's current location
+    private fun addBirdObservation() {
+        if (this::userLocation.isInitialized) {
+            val userId = auth.currentUser?.uid
+            if (userId != null) {
+                val observation = mapOf(
+                    "userId" to userId,
+                    "latitude" to userLocation.latitude,
+                    "longitude" to userLocation.longitude,
+                    "timestamp" to Date().time
+                )
+
+                // Push observation to Firebase with userId as part of the data
+                birdObservationsRef.push().setValue(observation)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Observation added!", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to add observation: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this, "Location not initialized yet.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    // Check location permissions and request if needed
     private fun checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -173,6 +204,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             getUserLocation() // Get user location if permission is granted
             displayPredefinedHotspots() // Display hotspots if permission is granted
+            displayUserObservations()  // Display all user observations on map
         }
     }
 
@@ -197,11 +229,10 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-
-
     @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        displayPredefinedHotspots()  // Directly call to confirm the hotspots display
 
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -217,6 +248,73 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    // Function to display bird observations for the current user on the map
+    private fun displayUserObservations() {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            birdObservationsRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    map.clear()  // Clear any existing markers on the map
+
+                    snapshot.children.forEach { observationSnapshot ->
+                        val storedUserId = observationSnapshot.child("userId").getValue(String::class.java)
+                        if (storedUserId == userId) {
+                            val latitude = observationSnapshot.child("latitude").getValue(Double::class.java)!!
+                            val longitude = observationSnapshot.child("longitude").getValue(Double::class.java)!!
+                            val birdName = observationSnapshot.child("birdName").getValue(String::class.java) ?: "Unknown Bird"
+                            val imageUrl = observationSnapshot.child("imageUrl").getValue(String::class.java) // optional field for image URL
+
+                            // Create LatLng for the observation's coordinates
+                            val observationLocation = LatLng(latitude, longitude)
+
+                            // Create the marker on the map
+                            val markerOptions = MarkerOptions()
+                                .position(observationLocation)
+                                .title(birdName)
+
+                            // Optionally, set a custom icon (bird image)
+                            if (!imageUrl.isNullOrEmpty()) {
+                                Picasso.get().load(imageUrl).into(object : Target {
+                                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                                        // Check if bitmap is null
+                                        if (bitmap != null) {
+                                            val icon = BitmapDescriptorFactory.fromBitmap(bitmap)
+                                            markerOptions.icon(icon)
+                                        } else {
+                                            // Handle the case where bitmap is null (fallback icon)
+                                            Log.e("HotspotsActivity", "Bitmap is null, setting default icon.")
+                                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker())
+                                        }
+                                    }
+
+                                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                                        // Handle failure in loading bitmap
+                                        Log.e("HotspotsActivity", "Failed to load bitmap", e)
+                                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker())
+                                    }
+
+                                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                                        // Handle placeholder image (optional)
+                                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker())
+                                    }
+                                })
+                            } else {
+                                // If there's no image URL, use a default marker
+                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker())
+                            }
+
+                            // Add the marker to the map
+                            map.addMarker(markerOptions)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("HotspotsActivity", "Failed to read bird observations: ${error.message}")
+                }
+            })
+        }
+    }
 
     // Simulate fetching maxTravelDistance and measurementUnit from Firebase
     private fun fetchSettingsFromFirebase() {
@@ -261,6 +359,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (distanceInKilometers == null || maxTravelDistance == null) {
             displayPredefinedHotspots()
+            displayUserObservations()
         } else {
             addHotspotsToMap(distanceInKilometers)
         }
@@ -268,22 +367,31 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun displayPredefinedHotspots() {
         if (::map.isInitialized) {
-            map.clear() // Clear existing markers
-            // Add predefined hotspots to the map
-            for (hotspot in predefinedHotspots) {
-                map.addMarker(MarkerOptions().position(hotspot).title("Hotspot"))
-            }
+            // Introduce a slight delay to ensure the map is fully initialized before adding markers
+            Handler(Looper.getMainLooper()).postDelayed({
+            // Resize the custom icon before applying it to the markers
+                val resizedIcon = BitmapDescriptorFactory.fromBitmap(resizeMarkerIcon(R.drawable.bird_map_icon, 100, 100))
 
 
-            // Optionally, move the camera to the first hotspot or user location
-            if (predefinedHotspots.isNotEmpty()) {
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(predefinedHotspots[0], 8f))
-            }
+                // Add predefined hotspots to the map with the resized icon
+                for (hotspot in predefinedHotspots) {
+                    map.addMarker(
+                        MarkerOptions()
+                            .position(hotspot)
+                            .title("Hotspot")
+                            .icon(resizedIcon) // Set custom icon here
+                    )
+                }
+
+                // Optionally, move the camera to the first hotspot or user location
+                if (predefinedHotspots.isNotEmpty()) {
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(predefinedHotspots[0], 8f))
+                }
+            }, 500) // Delay of 500ms to ensure map initialization
         } else {
             Log.e("HotspotsActivity", "Map is not initialized.")
         }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
@@ -292,8 +400,6 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
             database.removeEventListener(settingsListener)
         }
     }
-
-
 
     // Function to resize the marker icon and ensure it has the shape of a location pin
     private fun resizeMarkerIcon(iconResId: Int, width: Int, height: Int): Bitmap {
@@ -335,6 +441,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Replace ic_location_pin with your location-shaped icon
         val resizedIcon = BitmapDescriptorFactory.fromBitmap(resizeMarkerIcon(R.drawable.bird_map_icon, 100, 100))
 
+
         // Filter hotspots based on the distance
         val nearbyHotspots = filterHotspotsByDistance(maxDistance)
 
@@ -347,6 +454,7 @@ class HotspotsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .icon(resizedIcon) // Use the location pin icon here
             )
         }
+
 
         // Center the camera to the first nearby hotspot
         if (nearbyHotspots.isNotEmpty()) {

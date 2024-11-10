@@ -18,4 +18,8 @@
     <color name="onSecondaryColor">#000000</color>
 
     <color name="lavender">#E6E6FA</color> <!-- Lavender color code -->
+
+    <!--QUIZ BUTTON -->
+    <color name="default_button_color">#67390B</color> <!-- Default color -->
+    <color name="selected_button_color">#C0C0C0</color> <!-- Silver color when selected -->
 </resources>
